@@ -44,7 +44,7 @@ const fetchObjekts = async (page: number) => {
     body: JSON.stringify({
       query: `
         query {
-          collectionsConnection(orderBy: timestamp_DESC, first: 30,${
+          collectionsConnection(orderBy: timestamp_DESC, first: 32,${
             skips === 0 ? "" : 'after: "' + skips + '",'
           } where: {}) {
             totalCount
@@ -87,13 +87,27 @@ const fetchObjekts = async (page: number) => {
 
 const changePage = async (page: number) => {
   const { objekts } = (await fetchObjekts(page)) as ObjektResponse;
-  collections.value = objekts;
+  collections.value = collections.value.concat(objekts);
 };
 
 onMounted(async () => {
   const { count, objekts } = (await fetchObjekts(page.value)) as ObjektResponse;
   items.value = count;
   collections.value = objekts;
+
+  window.addEventListener("scroll", () => {
+    if (
+      window.innerHeight + window.scrollY >= document.body.offsetHeight &&
+      collections.value.length < items.value
+    ) {
+      page.value++;
+      changePage(page.value);
+    }
+  });
+});
+
+onUnmounted(() => {
+  window.removeEventListener("scroll", () => {});
 });
 </script>
 <template>
@@ -102,7 +116,7 @@ onMounted(async () => {
   >
     <USkeleton
       v-if="!collections.length"
-      v-for="i in 30"
+      v-for="i in 32"
       :key="i"
       class="w-[165px] h-[256px] animate-pulse"
     />
@@ -110,11 +124,4 @@ onMounted(async () => {
       <NuxtImg :src="collection.front" class="w-full h-full object-cover" />
     </UContainer>
   </UContainer>
-  <UPagination
-    v-model="page"
-    :page-count="5"
-    :total="items"
-    class="mt-12 w-full justify-center"
-    @update:model-value="changePage"
-  />
 </template>
