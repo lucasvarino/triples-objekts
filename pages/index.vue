@@ -7,7 +7,7 @@ interface ObjektResponse {
 }
 
 interface Objekt {
-  artists: string;
+  artists: string[];
   back: string;
   backgroundColor: string;
   class: string;
@@ -27,12 +27,13 @@ interface ObjektResponse {
 }
 
 import { onMounted, ref } from "vue";
-
-const url = "https://squid.subsquid.io/cosmo/graphql";
+import Artists from "~/components/filters/artists.vue";
 
 const collections = ref<Objekt[]>([]);
 const page = ref(1);
 const items = ref(0);
+
+const url = useRuntimeConfig().public.COSMO_URL;
 
 const fetchObjekts = async (page: number) => {
   const skips = (page - 1) * 30;
@@ -111,6 +112,7 @@ onUnmounted(() => {
 });
 </script>
 <template>
+  <Artists />
   <UContainer
     class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5"
   >
