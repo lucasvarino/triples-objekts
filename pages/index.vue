@@ -36,7 +36,7 @@ const items = ref(0);
 const url = useRuntimeConfig().public.COSMO_URL;
 
 const fetchObjekts = async (page: number) => {
-  const skips = (page - 1) * 30;
+  const skips = (page - 1) * 32;
   const response = await fetch(url, {
     method: "POST",
     headers: {
@@ -122,7 +122,11 @@ onUnmounted(() => {
       :key="i"
       class="w-[165px] h-[256px] animate-pulse"
     />
-    <UContainer v-for="collection in collections" :key="collection.id">
+    <UContainer
+      v-for="collection in collections"
+      :key="collection.id"
+      class="hover:scale-110 transition-all"
+    >
       <NuxtImg :src="collection.front" class="w-full h-full object-cover" />
     </UContainer>
   </UContainer>
