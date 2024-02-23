@@ -97,20 +97,24 @@ onMounted(async () => {
 });
 </script>
 <template>
-  <UContainer class="flex flex-wrap justify-center items-center">
-    <UContainer
-      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5"
-    >
-      <UContainer v-for="collection in collections" :key="collection.id">
-        <img :src="collection.front" class="w-full h-full object-cover" />
-      </UContainer>
-    </UContainer>
-    <UPagination
-      v-model="page"
-      :page-count="5"
-      :total="items"
-      class="mt-12 mb-12 w-full justify-center"
-      @update:model-value="changePage"
+  <UContainer
+    class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5"
+  >
+    <USkeleton
+      v-if="!collections.length"
+      v-for="i in 30"
+      :key="i"
+      class="w-[165px] h-[256px] animate-pulse"
     />
+    <UContainer v-for="collection in collections" :key="collection.id">
+      <img :src="collection.front" class="w-full h-full object-cover" />
+    </UContainer>
   </UContainer>
+  <UPagination
+    v-model="page"
+    :page-count="5"
+    :total="items"
+    class="mt-12 w-full justify-center"
+    @update:model-value="changePage"
+  />
 </template>
