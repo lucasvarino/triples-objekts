@@ -96,24 +96,21 @@ onMounted(async () => {
   collections.value = objekts;
 });
 </script>
-
 <template>
-  <template>
-    <UContainer class="flex flex-wrap">
-      <UContainer
-        v-for="collection in collections"
-        :key="collection.id"
-        class="h-24 w-24 mr-4 mb-4"
-      >
-        <img :src="collection.front" />
+  <UContainer class="flex flex-wrap justify-center items-center">
+    <UContainer
+      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5"
+    >
+      <UContainer v-for="collection in collections" :key="collection.id">
+        <img :src="collection.front" class="w-full h-full object-cover" />
       </UContainer>
-      <UPagination
-        v-model="page"
-        :page-count="5"
-        :total="items"
-        class="mt-20 w-full"
-        @update:model-value="changePage"
-      />
     </UContainer>
-  </template>
+    <UPagination
+      v-model="page"
+      :page-count="5"
+      :total="items"
+      class="mt-12 mb-12 w-full justify-center"
+      @update:model-value="changePage"
+    />
+  </UContainer>
 </template>
