@@ -107,7 +107,7 @@ onMounted(async () => {
       class="w-[165px] h-[256px] animate-pulse"
     />
     <UContainer v-for="collection in collections" :key="collection.id">
-      <img :src="collection.front" class="w-full h-full object-cover" />
+      <NuxtImg :src="collection.front" class="w-full h-full object-cover" />
     </UContainer>
   </UContainer>
   <UPagination
