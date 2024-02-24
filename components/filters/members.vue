@@ -36,6 +36,10 @@ const selectedMember = ref<Member>();
       label="Artists"
       class="w-72"
       size="lg"
+      searchable
+      searchable-placeholder="Search for an member"
+      clear-search-on-close
+      :search-attributes="['name']"
     >
       <template #leading>
         <div
