@@ -127,7 +127,11 @@ onUnmounted(() => {
       :key="collection.id"
       class="hover:scale-110 transition-all"
     >
-      <NuxtImg :src="collection.front" class="w-full h-full object-cover" />
+      <NuxtImg
+        :src="collection.front"
+        class="w-full h-full object-cover"
+        :alt="collection.member"
+      />
     </UContainer>
   </UContainer>
 </template>
