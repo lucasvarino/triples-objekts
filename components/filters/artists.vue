@@ -24,9 +24,15 @@ interface ArtistsResponse {
   artists: Artists[];
 }
 
+interface Group {
+  name: string;
+  image: string;
+}
+
 const artistsUrl = useRuntimeConfig().public.ARTISTS_URL;
 const artists = ref<Artists[]>([]);
 const selectedArtist = ref<Artists>();
+const selectedMembers = ref<Member[]>();
 
 const fetchArtists = async (): Promise<ArtistsResponse | null> => {
   const { data, error } = await useFetch<ArtistsResponse>(
@@ -41,6 +47,20 @@ const fetchArtists = async (): Promise<ArtistsResponse | null> => {
   return data.value;
 };
 
+const selectGroup = (artist: Artists) => {
+  selectedMembers.value = artist.members;
+};
+
+const clearFilter = () => {
+  selectedArtist.value = undefined;
+};
+
+const group = computed(() => {
+  return {
+    name: selectedArtist.value?.name,
+    image: selectedArtist.value?.logoImageUrl,
+  };
+});
 // Fetch the artists
 const data = await fetchArtists();
 if (data) {
@@ -51,12 +71,15 @@ if (data) {
 <template>
   <h1>Artists</h1>
   <UContainer class="mb-12">
+    <UButton @click="clearFilter" class="mb-2"> Clear Filter </UButton>
     <USelectMenu
       v-model="selectedArtist"
       :options="artists"
       label="Artists"
       class="w-72"
       size="lg"
+      @change="selectGroup"
+      v-if="!selectedArtist"
     >
       <template #leading class="">
         <div
@@ -65,13 +88,13 @@ if (data) {
         >
           <UAvatar
             v-if="selectedArtist"
-            :src="selectedArtist?.logoImageUrl"
-            :alt="selectedArtist?.name"
+            :src="(selectedArtist as Artists).logoImageUrl"
+            :alt="(selectedArtist as Artists).name"
             size="sm"
-            v-bind="selectedArtist"
+            v-bind="(selectedArtist as Artists)"
           />
-          <label class="ml-4" v-bind="selectedArtist">{{
-            selectedArtist.name
+          <label class="ml-4" v-bind="(selectedArtist as Artists)">{{
+            (selectedArtist as Artists).name
           }}</label>
         </div>
         <div v-else>
@@ -88,5 +111,11 @@ if (data) {
         <label v-bind="artist">{{ artist.name }}</label>
       </template>
     </USelectMenu>
+    <FiltersMembers
+      :group="group"
+      :members="selectedMembers"
+      v-else
+      v-if="selectedMembers"
+    />
   </UContainer>
 </template>
