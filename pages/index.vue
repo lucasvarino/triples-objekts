@@ -56,11 +56,7 @@ const selectedMember = ref<Member>();
 
 const url = useRuntimeConfig().public.COSMO_URL;
 
-const fetchObjekts = async (
-  page: number,
-  group: Artists | null = null,
-  member: Member | null = null
-) => {
+const fetchObjekts = async (page: number) => {
   const skips = (page - 1) * 32;
   const response = await fetch(url, {
     method: "POST",
@@ -119,17 +115,8 @@ const fetchObjekts = async (
   };
 };
 
-const changePage = async (
-  page: number,
-  group: Artists | null = null,
-  member: Member | null = null,
-  filter = false
-) => {
-  const { objekts } = (await fetchObjekts(
-    page,
-    group,
-    member
-  )) as ObjektResponse;
+const changePage = async (page: number, filter = false) => {
+  const { objekts } = (await fetchObjekts(page)) as ObjektResponse;
 
   if (filter) {
     collections.value = objekts;
@@ -141,18 +128,18 @@ const changePage = async (
 
 const changeGroup = async (artist: Artists) => {
   selectedGroup.value = artist;
-  changePage(1, artist, selectedMember.value, true);
+  changePage(1, true);
 };
 
 const changeMember = (member: Member) => {
   selectedMember.value = member;
-  changePage(1, selectedGroup.value, member, true);
+  changePage(1, true);
 };
 
 const clearFilter = () => {
   selectedGroup.value = undefined;
   selectedMember.value = undefined;
-  changePage(1, null, null, true);
+  changePage(1, true);
 };
 
 onMounted(async () => {
