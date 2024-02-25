@@ -40,6 +40,7 @@ const selectedMember = ref<Member>();
       searchable-placeholder="Search for an member"
       clear-search-on-close
       :search-attributes="['name']"
+      @change="$emit('change-member', selectedMember)"
     >
       <template #leading>
         <div

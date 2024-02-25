@@ -26,16 +26,41 @@ interface ObjektResponse {
   objekts: Objekt[];
 }
 
+interface Member {
+  id: string;
+  name: string;
+  alias: string;
+  artist: string; // Group or solo
+  order: number;
+  profileImageUrl: string;
+  units: string[];
+}
+
+interface Artists {
+  contracts: string[];
+  fandomName: string;
+  logoImageUrl: string;
+  members: Member[];
+  name: string;
+  title: string;
+}
+
 import { onMounted, ref } from "vue";
 import Artists from "~/components/filters/artists.vue";
 
 const collections = ref<Objekt[]>([]);
 const page = ref(1);
 const items = ref(0);
+const selectedGroup = ref<Artists>();
+const selectedMember = ref<Member>();
 
 const url = useRuntimeConfig().public.COSMO_URL;
 
-const fetchObjekts = async (page: number) => {
+const fetchObjekts = async (
+  page: number,
+  group: Artists | null = null,
+  member: Member | null = null
+) => {
   const skips = (page - 1) * 32;
   const response = await fetch(url, {
     method: "POST",
@@ -47,7 +72,15 @@ const fetchObjekts = async (page: number) => {
         query {
           collectionsConnection(orderBy: timestamp_DESC, first: 32,${
             skips === 0 ? "" : 'after: "' + skips + '",'
-          } where: {}) {
+          } where: {${
+        selectedGroup.value
+          ? 'artists_containsAll: "' + selectedGroup.value.name + '"'
+          : ""
+      }${
+        selectedMember.value
+          ? 'member_eq: "' + selectedMember.value.name + '"'
+          : ""
+      }}) {
             totalCount
             edges {
               node {
@@ -86,9 +119,40 @@ const fetchObjekts = async (page: number) => {
   };
 };
 
-const changePage = async (page: number) => {
-  const { objekts } = (await fetchObjekts(page)) as ObjektResponse;
+const changePage = async (
+  page: number,
+  group: Artists | null = null,
+  member: Member | null = null,
+  filter = false
+) => {
+  const { objekts } = (await fetchObjekts(
+    page,
+    group,
+    member
+  )) as ObjektResponse;
+
+  if (filter) {
+    collections.value = objekts;
+    return;
+  }
+
   collections.value = collections.value.concat(objekts);
+};
+
+const changeGroup = async (artist: Artists) => {
+  selectedGroup.value = artist;
+  changePage(1, artist, selectedMember.value, true);
+};
+
+const changeMember = (member: Member) => {
+  selectedMember.value = member;
+  changePage(1, selectedGroup.value, member, true);
+};
+
+const clearFilter = () => {
+  selectedGroup.value = undefined;
+  selectedMember.value = undefined;
+  changePage(1, null, null, true);
 };
 
 onMounted(async () => {
@@ -112,7 +176,11 @@ onUnmounted(() => {
 });
 </script>
 <template>
-  <Artists />
+  <Artists
+    @change-member="changeMember"
+    @change-group="changeGroup"
+    @clear-filter="clearFilter"
+  />
   <UContainer
     class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5"
   >

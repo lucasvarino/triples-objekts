@@ -33,6 +33,7 @@ const artistsUrl = useRuntimeConfig().public.ARTISTS_URL;
 const artists = ref<Artists[]>([]);
 const selectedArtist = ref<Artists>();
 const selectedMembers = ref<Member[]>();
+const emit = defineEmits(["change-member", "change-group", "clear-filter"]);
 
 const fetchArtists = async (): Promise<ArtistsResponse | null> => {
   const { data, error } = await useFetch<ArtistsResponse>(
@@ -49,10 +50,12 @@ const fetchArtists = async (): Promise<ArtistsResponse | null> => {
 
 const selectGroup = (artist: Artists) => {
   selectedMembers.value = artist.members;
+  emit("change-group", artist);
 };
 
 const clearFilter = () => {
   selectedArtist.value = undefined;
+  emit("clear-filter");
 };
 
 const group = computed(() => {
@@ -116,6 +119,7 @@ if (data) {
       :members="selectedMembers"
       v-else
       v-if="selectedMembers"
+      @change-member="emit('change-member', $event)"
     />
   </UContainer>
 </template>
