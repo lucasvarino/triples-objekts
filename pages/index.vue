@@ -47,12 +47,15 @@ interface Artists {
 
 import { onMounted, ref } from "vue";
 import Artists from "~/components/filters/artists.vue";
+import ObjektDetaills from "~/components/modal/objektDetaills.vue";
 
 const collections = ref<Objekt[]>([]);
 const page = ref(1);
 const items = ref(0);
 const selectedGroup = ref<Artists>();
 const selectedMember = ref<Member>();
+const clickedObjekt = ref<Objekt>();
+const showModal = ref(false);
 
 const url = useRuntimeConfig().public.COSMO_URL;
 
@@ -142,6 +145,11 @@ const clearFilter = () => {
   changePage(1, true);
 };
 
+const openModal = (objekt: Objekt) => {
+  clickedObjekt.value = objekt;
+  showModal.value = true;
+};
+
 onMounted(async () => {
   const { count, objekts } = (await fetchObjekts(page.value)) as ObjektResponse;
   items.value = count;
@@ -163,6 +171,9 @@ onUnmounted(() => {
 });
 </script>
 <template>
+  <UModal v-model="showModal" class="w-[100vw]">
+    <ObjektDetaills :objekt="clickedObjekt" />
+  </UModal>
   <Artists
     @change-member="changeMember"
     @change-group="changeGroup"
@@ -181,6 +192,7 @@ onUnmounted(() => {
       v-for="collection in collections"
       :key="collection.id"
       class="hover:scale-110 transition-all"
+      @click="openModal(collection)"
     >
       <NuxtImg
         :src="collection.front"
