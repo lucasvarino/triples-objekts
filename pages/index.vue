@@ -48,6 +48,7 @@ interface Artists {
 import { onMounted, ref } from "vue";
 import Artists from "~/components/filters/artists.vue";
 import ObjektDetaills from "~/components/modal/objektDetaills.vue";
+import modal from "~/components/modal/modal.vue";
 
 const collections = ref<Objekt[]>([]);
 const page = ref(1);
@@ -150,6 +151,11 @@ const openModal = (objekt: Objekt) => {
   showModal.value = true;
 };
 
+const closeModal = () => {
+  showModal.value = false;
+  console.log("Recebendo o evento close");
+};
+
 onMounted(async () => {
   const { count, objekts } = (await fetchObjekts(page.value)) as ObjektResponse;
   items.value = count;
@@ -171,9 +177,9 @@ onUnmounted(() => {
 });
 </script>
 <template>
-  <UModal v-model="showModal" class="w-[100vw]">
+  <Modal :show="showModal" @close="closeModal">
     <ObjektDetaills :objekt="clickedObjekt" />
-  </UModal>
+  </Modal>
   <Artists
     @change-member="changeMember"
     @change-group="changeGroup"
