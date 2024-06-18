@@ -177,7 +177,7 @@ onUnmounted(() => {
 });
 </script>
 <template>
-  <Modal :show="showModal" @close="closeModal">
+  <Modal :show="showModal" @close="closeModal" maxWidth="5xl">
     <ObjektDetaills :objekt="clickedObjekt" />
   </Modal>
   <Artists

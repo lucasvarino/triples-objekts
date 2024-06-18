@@ -32,7 +32,6 @@ watch(
 const close = () => {
     if (props.closeable) {
         emit('close');
-        console.log("Emitindo o evento close")
     }
 };
 
@@ -56,6 +55,7 @@ const maxWidthClass = computed(() => {
         lg: 'sm:max-w-lg',
         xl: 'sm:max-w-xl',
         '2xl': 'sm:max-w-2xl',
+        '5xl': 'sm:max-w-5xl',
     }[props.maxWidth];
 });
 </script>
